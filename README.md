@@ -24,7 +24,7 @@ That's all there is to it! There are some more arguments you can pass in to `Vow
 
 ## `VowChain`
 
-`VowChain` chains multiple `Vow`s together, one after another!
+`VowChain` chains multiple `Vow`s together, one after another! In a `VowChain`, each `Vow` in the chain is called in order. Once the current `Vow` finishes its request, it calls the function at the current `Vow` index in the functions table, and if that returns `true` then it continues the chain, otherwise it doesn't.
 
 ```lua
 local chain = { -- Vows waiting to be spoken...
