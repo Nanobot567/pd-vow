@@ -1,6 +1,6 @@
 # pd-vow
 
-Various classes designed to help with making network requests on Playdate.
+Various classes designed to help with making network requests on Playdate (WIP!)
 
 ## wot?
 
