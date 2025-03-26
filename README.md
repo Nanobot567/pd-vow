@@ -50,4 +50,6 @@ local functions = {
         print("woah, this won't be called!")
     end
 }
+
+VowChain(chain, functions) -- starts chain immediately
 ```

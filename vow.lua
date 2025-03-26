@@ -1,6 +1,6 @@
 -- "i, [      ] will be right beside you, through rain and shine, through thick and thin, forever and ever."
 
--- Vow and VowChain by nanobot567!
+-- Vow and VowChain by nanobot567, v1.0!
 -- do whatever you want, idrc, but credit would be cool :3
 
 import "CoreLibs/object"
