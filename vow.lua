@@ -8,8 +8,6 @@ import "CoreLibs/object"
 local pd <const> = playdate
 
 ---@class Vow
----@field REQUEST_TYPE_GET number 0
----@field REQUEST_TYPE_POST number 1
 ---@field server playdate.network.http network object used for requests
 ---@field path string path from server root
 ---@field sendData string data that will be sent to the server
