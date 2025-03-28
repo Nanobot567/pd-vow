@@ -1,6 +1,6 @@
 -- "i, [      ] will be right beside you, through rain and shine, through thick and thin, forever and ever."
 
--- Vow and VowChain by nanobot567, v1.0!
+-- Vow and VowChain by nanobot567, v1.1!
 -- do whatever you want, idrc, but credit would be cool :3
 
 import "CoreLibs/object"
@@ -61,18 +61,23 @@ function Vow:init(server, latent, path, requestType, headers, data)
   self.receivedResponse = false
   self.error = nil
   self.requestCompleteCallback = nil
+  self.requestCallback = nil
 
   self.type = requestType
 
   server:setRequestCallback(function()
     self:_requestCallback()
+
+    if self.requestCallback then
+      self.requestCallback(self.data, self.server)
+    end
   end)
 
   server:setRequestCompleteCallback(function ()
     self:_requestCompleteCallback()
 
     if self.requestCompleteCallback then
-      self.requestCompleteCallback(self.data)
+      self.requestCompleteCallback(self.data, self.server)
     end
   end)
 
