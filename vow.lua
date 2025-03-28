@@ -152,6 +152,14 @@ function Vow:setRequestCompleteCallback(fn)
   self.requestCompleteCallback = fn
 end
 
+---Set the function to be executed as soon as the network recieves data.
+---
+---@param fn function
+function Vow:setRequestCallback(fn)
+  self.requestCallback = fn
+end
+
+
 ---@class VowChain
 VowChain = {}
 class("VowChain").extends()
