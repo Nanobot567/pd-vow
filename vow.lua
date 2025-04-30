@@ -1,6 +1,6 @@
 -- "i, [      ] will be right beside you, through rain and shine, through thick and thin, forever and ever."
 
--- Vow and VowChain by nanobot567, v1.1!
+-- Vow and VowChain by nanobot567, v1.2!
 -- do whatever you want, idrc, but credit would be cool :3
 
 import "CoreLibs/object"
@@ -17,11 +17,17 @@ local pd <const> = playdate
 ---@field private _headersReadCallback function
 ---@field private _requestCallback function
 ---@field private _requestCompleteCallback function
+---@field private _connectionClosedCallback function
 Vow = {}
 class("Vow").extends()
 
-Vow.REQUEST_TYPE_GET = 0
-Vow.REQUEST_TYPE_POST = 1
+Vow.REQUEST_TYPE_GET = "GET"
+Vow.REQUEST_TYPE_POST = "POST"
+Vow.REQUEST_TYPE_PUT = "PUT"
+Vow.REQUEST_TYPE_PATCH = "PATCH"
+Vow.REQUEST_TYPE_DELETE = "DELETE"
+
+Vow.VALID_REQUEST_TYPES = {"GET", "POST", "PUT", "PATCH", "DELETE"}
 
 ---Creates a new Vow, and unless `latent` is `true`, sends the specified request to the server.
 ---
@@ -59,9 +65,11 @@ function Vow:init(server, latent, path, requestType, headers, data)
 
   self.responseCompleted = false
   self.receivedResponse = false
+  self.connectionClosed = false
   self.error = nil
   self.requestCompleteCallback = nil
   self.requestCallback = nil
+  self.connectionClosedCallback = nil
 
   self.type = requestType
 
@@ -85,6 +93,14 @@ function Vow:init(server, latent, path, requestType, headers, data)
     self:_headersReadCallback()
   end)
 
+  server:setConnectionClosedCallback(function()
+    self:_connectionClosedCallback()
+
+    if self.connectionClosedCallback then
+      self.requestCompleteCallback(self.server)
+    end
+  end)
+
   if not latent then
     return self:speak()
   end
@@ -101,6 +117,10 @@ end
 
 function Vow:_requestCompleteCallback()
   self.responseCompleted = true
+end
+
+function Vow:_connectionClosedCallback()
+  self.connectionClosed = true
 end
 
 
@@ -137,15 +157,23 @@ end
 function Vow:speak()
   self.data = ""
   self.headers = ""
+  
+  local ok = false
 
-  if self.type == Vow.REQUEST_TYPE_GET then
-    return self.server:get(self.path, self.sendHeaders)
-  elseif self.type == Vow.REQUEST_TYPE_POST then
-    return self.server:post(self.path, self.sendHeaders, self.sendData)
+  for i, v in ipairs(Vow.VALID_REQUEST_TYPES) do
+    if v == self.type then
+      ok = true
+    end
+  end
+
+  if ok then
+    return self.server:query(self.type, self.path, self.sendHeaders, self.sendData)
   end
 end
 
 ---Set the function to be executed as soon as the network request is completed.
+---
+---Function is passed downloaded data and pd.network.http object.
 ---
 ---@param fn function
 function Vow:setRequestCompleteCallback(fn)
@@ -154,9 +182,20 @@ end
 
 ---Set the function to be executed as soon as the network recieves data.
 ---
+---Function is passed downloaded data and pd.network.http object.
+---
 ---@param fn function
 function Vow:setRequestCallback(fn)
   self.requestCallback = fn
+end
+
+---Set the function to be executed once the server has closed the connection.
+---
+---Function is passed pd.network.http object.
+---
+---@param fn function
+function Vow:setConnectionClosedCallback(fn)
+  self.connectionClosedCallback = fn
 end
 
 
