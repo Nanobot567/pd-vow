@@ -111,8 +111,14 @@ function Vow:_headersReadCallback()
   self.receivedResponse = true
 end
 
+local data
+
 function Vow:_requestCallback()
-  self.data = self.data .. self.server:read()
+  data = self.server:read()
+
+  if data then
+    self.data = self.data .. data
+  end
 end
 
 function Vow:_requestCompleteCallback()
